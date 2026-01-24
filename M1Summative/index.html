@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMatch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white font-sans">
+
+    <header class="p-5 flex flex-col md:flex-row justify-between items-center bg-gray-800 shadow-xl border-b-2 border-pink-600 fixed w-full top-0 z-50">
+        <a href="#" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-rose-600 tracking-wider" id="logo">
+            CINEMATCH
+        </a>
+
+        <nav class="my-4 md:my-0 flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+            <button class="nav-btn active-btn" onclick="switchCategory('popular')">Popular</button>
+            <button class="nav-btn" onclick="switchCategory('top_rated')">Top Rated</button>
+            <button class="nav-btn" onclick="switchCategory('upcoming')">Upcoming</button>
+            <button class="nav-btn border border-pink-500 text-pink-400 hover:bg-pink-900" onclick="showFavorites()">
+                My Likes ❤️
+            </button>
+        </nav>
+        
+        <form id="form" class="w-full md:w-auto relative">
+            <input type="text" id="search" placeholder="Find a movie..." class="bg-gray-700 text-white border-2 border-pink-900 rounded-full py-2 px-5 pl-10 w-full md:w-64 focus:outline-none focus:border-pink-500">
+            <span class="material-icons absolute left-3 top-2.5 text-pink-500">search</span>
+        </form>
+    </header>
+
+  <main id="main" class="pt-36 pb-20 px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 max-w-[1800px] mx-auto">
+    </main>
+
+    <script src="script.js" defer></script>
+</body>
+</html>

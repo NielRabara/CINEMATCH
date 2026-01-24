@@ -1,0 +1,55 @@
+/* style.css */
+
+/* Global Dark Theme */
+body {
+    background-color: #0f172a; 
+    color: white;
+    font-family: sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #1e293b; 
+}
+::-webkit-scrollbar-thumb {
+    background: #ec4899;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #db2777;
+}
+
+/* Navigation Bar*/
+header {
+    background: rgba(15, 23, 42, 0.95); 
+    backdrop-filter: blur(10px);
+}
+
+/* Card Hover Glow */
+.movie-card:hover {
+    box-shadow: 0 0 25px rgba(236, 72, 153, 0.25); 
+    border-color: #ec4899;
+}
+
+/* Navigation Buttons */
+.nav-btn {
+    background: transparent;
+    color: #fbcfe8; 
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+.nav-btn:hover {
+    background-color: rgba(236, 72, 153, 0.1);
+    color: white;
+}
+.active-btn {
+    background-color: #db2777; 
+    color: white;
+    box-shadow: 0 0 15px rgba(219, 39, 119, 0.5);
+}
