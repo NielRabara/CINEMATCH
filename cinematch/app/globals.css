@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-dark-bg: #111827;     /* Darker background like the image */
+  --color-card-bg: #1f2937;     /* Slightly lighter for cards */
+  --color-pink-primary: #ec4899; 
+  --color-yellow-star: #eab308;
+}
+
+@layer base {
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+body {
+  background-color: var(--color-dark-bg); 
+  color: white;
+  margin: 0;
+  font-family: sans-serif;
+}
