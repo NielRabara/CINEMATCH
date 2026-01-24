@@ -17,10 +17,9 @@ const form = document.getElementById('form');
 const search = document.getElementById('search');
 const navBtns = document.querySelectorAll('.nav-btn');
 
-// Initial Load
 getMovies(ENDPOINTS.popular);
 
-// --- 1. MAIN FETCH ---
+// MAIN FETCH
 async function getMovies(url) {
     try {
         const res = await fetch(url);
@@ -35,9 +34,8 @@ async function getMovies(url) {
     }
 }
 
-// --- RENDER CARD  ---
+// RENDER CARD 
 
-// script.js - Final Fix for Scrolling & Positioning
 
 async function showMovies(movies) {
     main.innerHTML = '';
@@ -49,7 +47,6 @@ async function showMovies(movies) {
 
         const movieEl = document.createElement('div');
         
-        // CONTAINER: 'relative' is crucial to keep the footer pinned inside
         movieEl.classList.add('movie-card', 'bg-gray-900', 'rounded-xl', 'overflow-hidden', 'shadow-xl', 'relative', 'group', 'border', 'border-gray-800', 'transition-all', 'duration-300');
 
         const imageSrc = poster_path ? IMG_PATH + poster_path : 'https://via.placeholder.com/500x750?text=No+Image';
@@ -97,7 +94,7 @@ async function showMovies(movies) {
     }
 }
 
-// --- 3. FETCH RATINGS (Rotten Tomatoes & IMDb) ---
+// FETCH RATINGS
 async function fetchRatings(tmdbId) {
     try {
         const idRes = await fetch(`${BASE_URL}/movie/${tmdbId}/external_ids?api_key=${API_KEY}`);
@@ -124,7 +121,7 @@ async function fetchRatings(tmdbId) {
     } catch (e) { console.log(e); }
 }
 
-// --- 4. TOGGLE LIKE ---
+// TOGGLE LIKE
 function toggleLike(id) {
     let favorites = JSON.parse(localStorage.getItem('myLikes')) || [];
     const icon = document.getElementById(`icon-${id}`);
@@ -147,7 +144,7 @@ function toggleLike(id) {
     localStorage.setItem('myLikes', JSON.stringify(favorites));
 }
 
-// --- 5. SHOW FAVORITES (FIXED) ---
+// SHOW FAVORITES
 async function showFavorites() {
     navBtns.forEach(btn => btn.classList.remove('active-btn'));
     event.target.classList.add('active-btn');
@@ -168,7 +165,7 @@ async function showFavorites() {
     showMovies(movies);
 }
 
-// --- 6. CATEGORY SWITCH ---
+// CATEGORY SWITCH
 function switchCategory(category) {
     navBtns.forEach(btn => btn.classList.remove('active-btn'));
     const btns = Array.from(navBtns);
