@@ -9,7 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.100.0",
+    "groq-sdk": "^1.1.1",
+    "lucide-react": "^1.6.0",
     "next": "16.1.4",
+    "openai": "^6.32.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

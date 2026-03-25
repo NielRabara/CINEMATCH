@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-dark-bg: #111827;     /* Darker background like the image */
-  --color-card-bg: #1f2937;     /* Slightly lighter for cards */
+  --color-dark-bg: #111827; 
+  --color-card-bg: #1f2937;    
   --color-pink-primary: #ec4899; 
   --color-yellow-star: #eab308;
 }
