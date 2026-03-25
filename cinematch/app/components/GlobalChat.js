@@ -20,6 +20,7 @@ export default function GlobalChat({ currentUser }) {
   const [username, setUsername] = useState('');
   const [isMinimized, setIsMinimized] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Only allow chat if user is logged in
@@ -31,6 +32,7 @@ export default function GlobalChat({ currentUser }) {
 
     // Only set up Supabase if it's available
     if (supabase) {
+      // Fetch messages immediately when chat opens
       fetchMessages();
 
       // Set up real-time subscription with better error handling
@@ -45,7 +47,7 @@ export default function GlobalChat({ currentUser }) {
             }, 
             (payload) => {
               console.log('New message received:', payload.new);
-              setMessages(prev => [...prev, payload.new]);
+              setMessages(prev => [payload.new, ...prev]); // Add new message at top
             }
           )
           .subscribe((status) => {
@@ -63,9 +65,20 @@ export default function GlobalChat({ currentUser }) {
     }
   }, [currentUser]);
 
+  // Additional effect to fetch messages when chat opens
+  useEffect(() => {
+    if (isOpen && supabase && currentUser) {
+      fetchMessages();
+      // Auto-refresh every 30 seconds to ensure latest messages
+      const interval = setInterval(fetchMessages, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isOpen, supabase, currentUser]);
+
   const fetchMessages = async () => {
     if (!supabase) return;
     
+    setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('messages')
@@ -82,6 +95,8 @@ export default function GlobalChat({ currentUser }) {
       setMessages(data || []);
     } catch (error) {
       console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -89,27 +104,44 @@ export default function GlobalChat({ currentUser }) {
     e.preventDefault();
     if (!newMessage.trim() || !supabase) return;
 
+    const messageContent = newMessage.trim();
+    const tempMessage = {
+      id: Date.now(), // Temporary ID
+      username: username,
+      content: messageContent,
+      created_at: new Date().toISOString()
+    };
+
+    // Add message to UI instantly for better UX
+    setMessages(prev => [tempMessage, ...prev]);
+    setNewMessage('');
+
     try {
-      console.log('Sending message:', { username, content: newMessage.trim() });
+      console.log('Sending message:', { username, content: messageContent });
       
       const { error } = await supabase
         .from('messages')
         .insert([
           {
             username: username,
-            content: newMessage.trim(),
+            content: messageContent,
             created_at: new Date().toISOString()
           }
         ]);
 
       if (error) {
         console.error('Error sending message:', error);
+        // Remove the temp message if sending failed
+        setMessages(prev => prev.filter(msg => msg.id !== tempMessage.id));
       } else {
         console.log('Message sent successfully');
-        setNewMessage('');
+        // Refresh messages to get the real message with proper ID
+        setTimeout(fetchMessages, 500);
       }
     } catch (error) {
       console.error('Error:', error);
+      // Remove the temp message if sending failed
+      setMessages(prev => prev.filter(msg => msg.id !== tempMessage.id));
     }
   };
 
@@ -176,6 +208,11 @@ export default function GlobalChat({ currentUser }) {
                 <AlertCircle className="w-12 h-12 mx-auto mb-2 text-yellow-400" />
                 <p className="text-gray-400 mb-2">Chat is disabled</p>
                 <p className="text-xs text-gray-500">Configure Supabase to enable real-time chat</p>
+              </div>
+            ) : isLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto mb-2"></div>
+                <p className="text-gray-400">Loading messages...</p>
               </div>
             ) : messages.length === 0 ? (
               <div className="text-center py-8">
