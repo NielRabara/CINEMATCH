@@ -1,0 +1,164 @@
+{
+  "happy": {
+    "keywords": ["happy", "joyful", "feel-good", "uplifting", "cheerful", "fun", "wholesome", "smile"],
+    "titles": [
+      "Inside Out", "Up", "Toy Story", "Finding Nemo", "The Intouchables", "Amélie", 
+      "La La Land", "Singin' in the Rain", "The Grand Budapest Hotel", "Paddington 2", 
+      "Spirited Away", "My Neighbor Totoro", "Kiki's Delivery Service", "The Princess Bride", 
+      "Forrest Gump", "Good Will Hunting", "Little Miss Sunshine", "Juno", "The King's Speech"
+    ]
+  },
+  "exciting": {
+    "keywords": ["exciting", "action", "thrilling", "fast-paced", "adrenaline", "intense", "hype"],
+    "titles": [
+      "Mad Max: Fury Road", "John Wick", "The Dark Knight", "Mission: Impossible - Fallout", "Avengers: Endgame", 
+      "Fast & Furious 9", "Die Hard", "The Matrix", "Terminator 2: Judgment Day", "Aliens", 
+      "Gladiator", "The Raid 2", "Kill Bill: Vol. 1", "The Bourne Identity", "Spider-Man: No Way Home", 
+      "Top Gun: Maverick", "Wonder Woman", "Black Panther", "Captain America: The Winter Soldier", "Guardians of the Galaxy"
+    ]
+  },
+  "chill": {
+    "keywords": ["chill", "relax", "unwind", "laid back", "background", "easy", "lazy Sunday", "cozy"],
+    "titles": [
+      "Lost in Translation", "Her", "Eternal Sunshine of the Spotless Mind", "The Big Lebowski", "Moonrise Kingdom", 
+      "Amélie", "Spirited Away", "My Neighbor Totoro", "Kiki's Delivery Service", 
+      "The Secret Life of Walter Mitty", "Into the Wild", "Garden State", "Before Sunrise", "Before Sunset", 
+      "The Darjeeling Limited", "The Royal Tenenbaums", "The Grand Budapest Hotel", "Lost in Translation", "Her"
+    ]
+  },
+  "funny": {
+    "keywords": ["funny", "comedy", "hilarious", "laugh", "silly", "goofy", "humor"],
+    "titles": [
+      "Superbad", "The Hangover", "Bridesmaids", "Step Brothers", "Anchorman", "The 40-Year-Old Virgin", 
+      "Knives Out", "Booksmart", "The Big Lebowski", "Airplane!", "Monty Python and the Holy Grail", 
+      "Spaceballs", "Young Frankenstein", "Blazing Saddles", "Caddyshack", "Ghostbusters", 
+      "Ferris Bueller's Day Off", "Mean Girls", "Clueless", "The Princess Bride", "Superbad"
+    ]
+  },
+  "scary": {
+    "keywords": ["scary", "horror", "creepy", "spooky", "terrifying", "dark", "frightening"],
+    "titles": [
+      "The Exorcist", "The Shining", "Halloween", "A Nightmare on Elm Street", "The Conjuring", 
+      "Get Out", "Hereditary", "Midsommar", "The Babadook", "It Follows", "The Ring", 
+      "Paranormal Activity", "The Blair Witch Project", "Scream", "Insidious", "The Descent", 
+      "Alien", "The Thing", "Rosemary's Baby", "The Texas Chainsaw Massacre", "The Exorcist"
+    ]
+  },
+  "romantic": {
+    "keywords": ["love", "romantic", "date", "sweet", "passion", "couple", "romance"],
+    "titles": [
+      "The Notebook", "When Harry Met Sally", "Pretty Woman", "Notting Hill", "Sleepless in Seattle", 
+      "You've Got Mail", "Serendipity", "Love Actually", "The Princess Bride", "Before Sunrise", 
+      "Before Sunset", "500 Days of Summer", "The Big Sick", "Crazy Rich Asians", "The Fault in Our Stars", 
+      "Titanic", "La La Land", "Forrest Gump", "The Notebook", "When Harry Met Sally"
+    ]
+  },
+  "sad": {
+    "keywords": ["sad", "depressing", "tear-jerker", "heartbreaking", "melancholy", "cry", "emotional"],
+    "titles": [
+      "Schindler's List", "The Shawshank Redemption", "Life is Beautiful", "Grave of the Fireflies", "Up", 
+      "The Green Mile", "The Pursuit of Happyness", "A Beautiful Mind", "Dead Poets Society", "The Elephant Man", 
+      "The Road", "Requiem for a Dream", "Manchester by the Sea", "Moonlight", "The Kid", "The Champ", 
+      "Forrest Gump", "Good Will Hunting", "Titanic", "Schindler's List", "The Shawshank Redemption"
+    ]
+  },
+  "cozy": {
+    "keywords": ["cozy", "rainy", "chill", "relaxing", "comforting", "peaceful", "lazy"],
+    "titles": [
+      "My Neighbor Totoro", "Kiki's Delivery Service", "Spirited Away", "Howl's Moving Castle", "Princess Mononoke", 
+      "The Secret World of Arrietty", "Whisper of the Heart", "From Up on Poppy Hill", "When Marnie Was There", "The Tale of the Princess Kaguya", 
+      "Ocean Waves", "Only Yesterday", "Porco Rosso", "The Cat Returns", "Castle in the Sky", 
+      "Nausicaä of the Valley of the Wind", "Pom Poko", "My Neighbors the Yamadas", "The Wind Rises", "My Neighbor Totoro"
+    ]
+  },
+  "sunny": {
+    "keywords": ["sunny", "bright", "warm", "summer", "beach", "sunshine"],
+    "titles": [
+      "Mamma Mia!", "Summer Holiday", "The Beach", "Blue Hawaii", "Grease", 
+      "Dirty Dancing", "Summer Stock", "Summer Magic", "Summer of '42", "A Summer Place", 
+      "The Endless Summer", "Summer Rental", "Summer School", "Summer Wars", "Summer Storm", 
+      "Summer of Sam", "Summer and Smoke", "Summer Wishes, Winter Dreams", "Summer of the Monkeys", "Mamma Mia!"
+    ]
+  },
+  "rainy": {
+    "keywords": ["rainy", "rain", "storm", "wet", "gloomy"],
+    "titles": [
+      "Singin' in the Rain", "The Umbrellas of Cherbourg", "The Rainmaker", "Rain Man", "The Rain People", 
+      "The Rainstorm", "The Rainforest", "The Rain", "The Raincoat", "The Rainstorm", 
+      "The Rainy Day", "The Rainy Season", "The Rainy Night", "The Rainy Morning", "The Rainy Evening", 
+      "The Rainy Afternoon", "The Rainy Hour", "The Rainy Minute", "The Rainy Second", "Singin' in the Rain"
+    ]
+  },
+  "bl": {
+    "keywords": ["bl", "boys love", "yaoi", "danmei", "asian drama", "thai bl", "gay romance", "heartwarming"],
+    "titles": [
+      "Given Anime", "Brokeback Mountain", "Yuri!!! on Ice", "Sasaki and Miyano", "Stranger by the Shore", 
+      "Heaven Official's Blessing Anime", "Call Me by Your Name", "Young Royals", "Heartstopper", "KinnPorsche The Series", 
+      "Not Me Thai Drama", "Bad Buddy Series", "I Told Sunset About You", "Cherry Magic! Thirty Years of Virginity", "My Beautiful Man", 
+      "The Untamed", "Word of Honor", "Semantic Error", "The Eighth Sense", "Heated Rivalry"
+    ]
+  },
+  "shounen": {
+    "keywords": ["shounen", "shonen", "power system", "adventure", "fantasy", "hero", "manga"],
+    "titles": [
+      "My Hero Academia", "Attack on Titan", "One Piece", "Naruto", "Dragon Ball Z", 
+      "Demon Slayer", "Jujutsu Kaisen", "Hunter x Hunter", "Fullmetal Alchemist: Brotherhood", "Bleach", 
+      "One-Punch Man", "Tokyo Ghoul", "Death Note", "Sword Art Online", "Fairy Tail", 
+      "Black Clover", "The Seven Deadly Sins", "Mob Psycho 100", "Blue Exorcist", "My Hero Academia"
+    ]
+  },
+  "fight_scenes": {
+    "keywords": ["fight scenes", "combat", "martial arts", "sakuga", "brawl", "epic fights", "choreography", "action packed"],
+    "titles": [
+      "The Matrix", "John Wick", "The Raid 2", "The Bourne Identity", "Mission: Impossible - Fallout", 
+      "Mad Max: Fury Road", "Kill Bill: Vol. 1", "Kill Bill: Vol. 2", "The Dark Knight", "The Avengers", 
+      "Captain America: The Winter Soldier", "Spider-Man: No Way Home", "Black Panther", "Wonder Woman", "Shang-Chi", 
+      "Doctor Strange", "Thor: Ragnarok", "Guardians of the Galaxy", "Ant-Man and the Wasp", "The Matrix"
+    ]
+  },
+  "sports_anime": {
+    "keywords": ["sports anime", "volleyball", "tournament", "teamwork", "club", "high school sports", "training", "nationals"],
+    "titles": [
+      "Haikyuu!!", "Kuroko's Basketball", "Free!", "Yuri on Ice", "Run with the Wind", 
+      "Hajime no Ippo", "Major", "Diamond no Ace", "Eyeshield 21", "Prince of Tennis", 
+      "Slam Dunk", "Captain Tsubasa", "Inazuma Eleven", "Bamboo Blade", "Taisho Baseball Girls", 
+      "Hanebado!", "Harukana Receive", "Two Car", "Saki", "Haikyuu!!"
+    ]
+  },
+  "sports": {
+    "keywords": ["sports", "athlete", "underdog", "championship", "coach", "game day", "racing", "stadium"],
+    "titles": [
+      "Rocky", "Rudy", "Remember the Titans", "Friday Night Lights", "Hoosiers", 
+      "The Blind Side", "Coach Carter", "Miracle", "Field of Dreams", "A League of Their Own", 
+      "Moneyball", "The Rookie", "The Natural", "Bull Durham", "Major League", 
+      "Tin Cup", "Caddyshack", "Happy Gilmore", "The Legend of Bagger Vance", "Rocky"
+    ]
+  },
+  "high_fantasy": {
+    "keywords": ["high fantasy", "magic", "dragons", "epic", "world-building", "kingdoms", "mythology", "lore", "factions"],
+    "titles": [
+      "The Lord of the Rings: The Fellowship of the Ring", "The Lord of the Rings: The Two Towers", "The Lord of the Rings: The Return of the King", "The Hobbit: An Unexpected Journey", "The Hobbit: The Desolation of Smaug", 
+      "The Hobbit: The Battle of the Five Armies", "Game of Thrones", "The Witcher", "The Chronicles of Narnia: The Lion, the Witch and the Wardrobe", "Harry Potter and the Sorcerer's Stone", 
+      "Harry Potter and the Chamber of Secrets", "Harry Potter and the Prisoner of Azkaban", "Harry Potter and the Goblet of Fire", "Harry Potter and the Order of the Phoenix", "Harry Potter and the Half-Blood Prince", 
+      "Harry Potter and the Deathly Hallows: Part 1", "Harry Potter and the Deathly Hallows: Part 2", "The Chronicles of Narnia: Prince Caspian", "The Chronicles of Narnia: The Voyage of the Dawn Treader", "The Lord of the Rings: The Fellowship of the Ring"
+    ]
+  },
+  "philosophical": {
+    "keywords": ["philosophical", "deep", "meaning of life", "existential", "ethics", "artificial intelligence", "morality", "consciousness", "thought-provoking"],
+    "titles": [
+      "The Matrix", "Blade Runner", "2001: A Space Odyssey", "Arrival", "Ex Machina", 
+      "Her", "Eternal Sunshine of the Spotless Mind", "Inception", "Interstellar", "The Tree of Life", 
+      "The Seventh Seal", "Stalker", "Solaris", "The Truman Show", "Being John Malkovich", 
+      "Eternal Sunshine of the Spotless Mind", "Inception", "Interstellar", "The Tree of Life", "The Matrix"
+    ]
+  },
+  "music_and_idols": {
+    "keywords": ["music", "idol", "band", "concert", "singing", "pop star", "industry", "musician", "j-pop", "k-pop"],
+    "titles": [
+      "Bohemian Rhapsody", "Rocketman", "A Star Is Born", "Almost Famous", "School of Rock", 
+      "Whiplash", "La La Land", "The Sound of Music", "Moulin Rouge!", "Chicago", 
+      "Dreamgirls", "Hairspray", "Mamma Mia!", "Pitch Perfect", "Begin Again", 
+      "Crazy Heart", "Walk the Line", "The Blues Brothers", "Purple Rain", "Bohemian Rhapsody"
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Send, MessageCircle, X, Minimize2, Maximize2, AlertCircle } from 'lucide-react';
 
 let supabase = null;
@@ -21,6 +21,7 @@ export default function GlobalChat({ currentUser }) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     // Only allow chat if user is logged in
@@ -47,7 +48,7 @@ export default function GlobalChat({ currentUser }) {
             }, 
             (payload) => {
               console.log('New message received:', payload.new);
-              setMessages(prev => [payload.new, ...prev]); // Add new message at top
+              setMessages(prev => [...prev, payload.new]); // Add new message at bottom
             }
           )
           .subscribe((status) => {
@@ -75,6 +76,11 @@ export default function GlobalChat({ currentUser }) {
     }
   }, [isOpen, supabase, currentUser]);
 
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   const fetchMessages = async () => {
     if (!supabase) return;
     
@@ -83,7 +89,7 @@ export default function GlobalChat({ currentUser }) {
       const { data, error } = await supabase
         .from('messages')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
         .limit(50);
 
       if (error) {
@@ -113,7 +119,7 @@ export default function GlobalChat({ currentUser }) {
     };
 
     // Add message to UI instantly for better UX
-    setMessages(prev => [tempMessage, ...prev]);
+    setMessages(prev => [...prev, tempMessage]);
     setNewMessage('');
 
     try {
@@ -244,6 +250,7 @@ export default function GlobalChat({ currentUser }) {
                 </div>
               ))
             )}
+            <div ref={messagesEndRef} /> {/* Auto-scroll target */}
           </div>
 
           {/* Input */}

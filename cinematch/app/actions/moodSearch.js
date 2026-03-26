@@ -1,169 +1,195 @@
 'use server';
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import fs from 'node:fs';
 import path from 'node:path';
 
-function readEnvLocalValue(name) {
+const TMDB_API_KEY = '61e7c417108a4dccaebf5e5b6a0d23ef';
+const BASE_URL = 'https://api.themoviedb.org/3';
+
+// Load presets from JSON file
+function loadPresets() {
   try {
-    const p = path.join(process.cwd(), '.env.local');
-    if (!fs.existsSync(p)) return '';
-    const raw = fs.readFileSync(p, 'utf8');
-    const re = new RegExp(`^\\s*${name}\\s*=\\s*(.*)\\s*$`, 'm');
-    const m = raw.match(re);
-    if (!m) return '';
-    const value = (m[1] || '').trim();
-    // Strip surrounding quotes if present
-    return value.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
-  } catch {
-    return '';
+    const presetsPath = path.join(process.cwd(), 'app', 'data', 'presets.json');
+    const presetsData = fs.readFileSync(presetsPath, 'utf8');
+    return JSON.parse(presetsData);
+  } catch (error) {
+    console.error('Error loading presets:', error);
+    return {};
   }
 }
 
-function getGeminiConfig() {
-  const apiKey =
-    process.env.GOOGLE_GEMINI_API_KEY ||
-    readEnvLocalValue('GOOGLE_GEMINI_API_KEY');
-  if (!apiKey) {
-    throw new Error('Missing GOOGLE_GEMINI_API_KEY. Set it in `.env.local` and restart the dev server.');
-  }
-  return { apiKey };
+// Get Gemini API key from environment
+function getGeminiApiKey() {
+  return process.env.GOOGLE_GEMINI_API_KEY;
 }
 
-function safeParseJsonArray(text) {
-  if (!text) return null;
-  const trimmed = String(text).trim();
-
-  // Remove common markdown fences
-  const unfenced = trimmed
-    .replace(/^```json\s*/i, '')
-    .replace(/^```\s*/i, '')
-    .replace(/\s*```$/i, '')
-    .trim();
-
-  // Try direct parse
-  try {
-    return JSON.parse(unfenced);
-  } catch {
-    // Try extracting the first JSON array in the response
-    const start = unfenced.indexOf('[');
-    const end = unfenced.lastIndexOf(']');
-    if (start >= 0 && end > start) {
-      const slice = unfenced.slice(start, end + 1);
-      return JSON.parse(slice);
+// Keyword matching engine
+function findPresetMatch(userInput) {
+  const presets = loadPresets();
+  const input = userInput.toLowerCase();
+  
+  for (const [mood, data] of Object.entries(presets)) {
+    for (const keyword of data.keywords) {
+      if (input.includes(keyword)) {
+        console.log(`🎯 Found preset match: ${keyword} -> ${mood}`);
+        return { mood, data };
+      }
     }
-    throw new Error('AI returned an invalid JSON array');
   }
+  
+  return null; // No preset match found
+}
+
+// Randomly select up to 20 media items from array
+function getRandomMedia(mediaArray, count = 20) {
+  const shuffled = [...mediaArray].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
+// Fetch TMDB details for mixed media (movies and TV)
+async function fetchMediaDetails(mediaItems) {
+  const fetchPromises = mediaItems.map(async (item) => {
+    const endpoint = item.type === 'movie' ? 'movie' : 'tv';
+    const url = `${BASE_URL}/${endpoint}/${item.id}?api_key=${TMDB_API_KEY}`;
+    
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error(`Failed to fetch ${item.type} ${item.id}:`, response.status);
+        return null;
+      }
+      
+      const data = await response.json();
+      
+      // Normalize data structure for consistent UI rendering
+      return {
+        id: data.id,
+        title: data.title || data.name, // Movies use title, TV uses name
+        poster_path: data.poster_path,
+        vote_average: data.vote_average,
+        release_date: data.release_date || data.first_air_date, // Movies use release_date, TV uses first_air_date
+        media_type: item.type,
+        is_tv: item.type === 'tv',
+        overview: data.overview,
+        backdrop_path: data.backdrop_path
+      };
+    } catch (error) {
+      console.error(`Error fetching ${item.type} ${item.id}:`, error);
+      return null;
+    }
+  });
+  
+  // Execute all fetches concurrently
+  const results = await Promise.all(fetchPromises);
+  
+  // Filter out null results (failed fetches)
+  return results.filter(item => item !== null);
 }
 
 export async function getMoodMovieRecommendations(mood) {
-  try {
-    const { apiKey } = getGeminiConfig();
-    
-    // Initialize the Google Generative AI client
-    const genAI = new GoogleGenerativeAI(apiKey);
-    
-    // Try multiple models with retry logic (most stable first)
-    const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"];
-    let lastError = null;
-    
-    for (const modelName of models) {
-      let retryCount = 0;
-      const maxRetries = 3;
+  // First try preset matching
+  const presetMatch = findPresetMatch(mood);
+  if (presetMatch) {
+    // Handle both media arrays and titles arrays
+    if (presetMatch.data.media) {
+      // Media array format (TMDB IDs)
+      const selectedMedia = getRandomMedia(presetMatch.data.media, 20);
+      console.log(`⚡ Fast preset match: ${selectedMedia.length} items for mood: ${presetMatch.mood}`);
       
-      while (retryCount <= maxRetries) {
-        try {
-          const model = genAI.getGenerativeModel({ model: modelName });
-
-          const prompt = `Based on the mood "${mood}", suggest 6 popular titles that match this feeling.
-Include movies and TV series (including anime if appropriate).
-Return ONLY a JSON array of title strings, nothing else.
-Example: ["Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Title 6"]`;
-
-          const result = await model.generateContent(prompt);
-          const text = result.response.text();
-
-          // Clean up the response (sometimes Gemini adds markdown ```json)
-          const cleanedJson = text.replace(/```json|```/g, "").trim();
-          
-          const titles = safeParseJsonArray(cleanedJson);
-          if (!Array.isArray(titles) || titles.length === 0) {
-            throw new Error('AI returned an empty list');
-          }
-          
-          return { success: true, titles: titles.filter(Boolean).slice(0, 10) };
-          
-        } catch (error) {
-          lastError = error;
-          
-          // If it's a 503 error and we haven't exhausted retries, wait and retry
-          if (error.status === 503 && retryCount < maxRetries) {
-            const delayMs = Math.min(1000 * Math.pow(2, retryCount), 5000); // Exponential backoff, max 5s
-            console.warn(`Model ${modelName} failed (attempt ${retryCount + 1}/${maxRetries + 1}), retrying in ${delayMs}ms:`, error.message);
-            await new Promise(resolve => setTimeout(resolve, delayMs));
-            retryCount++;
-            continue;
-          }
-          
-          console.warn(`Model ${modelName} failed:`, error.message);
-          
-          // If it's not a 503 or we've exhausted retries, try next model
-          if (error.status !== 503 || retryCount >= maxRetries) {
-            break;
-          }
-        }
-      }
+      // Fetch detailed TMDB data for all media items
+      const detailedMedia = await fetchMediaDetails(selectedMedia);
+      console.log(`🎬 Fetched ${detailedMedia.length} detailed media items`);
+      
+      return { 
+        success: true, 
+        titles: detailedMedia.map(m => m.title), 
+        source: 'preset',
+        mood: presetMatch.mood,
+        media: detailedMedia // Return ALL media items, not just 5
+      };
+    } else if (presetMatch.data.titles) {
+      // Titles array format - use all 20 titles
+      const titles = presetMatch.data.titles; // Use ALL titles, don't limit
+      console.log(`⚡ Fast preset match: ${titles.length} titles for mood: ${presetMatch.mood}`);
+      
+      return { 
+        success: true, 
+        titles: titles, 
+        source: 'preset',
+        mood: presetMatch.mood
+      };
+    }
+  }
+  
+  // Fallback to Gemini if no preset match
+  console.log("🤖 No preset match, falling back to Gemini...");
+  try {
+    const geminiApiKey = getGeminiApiKey();
+    if (!geminiApiKey) {
+      throw new Error('Google Gemini API key not found');
     }
     
-    // If we get here, all models failed
-    throw lastError;
+    const genAI = new GoogleGenerativeAI(geminiApiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    
+    const prompt = `You are a movie recommendation expert. Based on the mood "${mood}", suggest exactly 20 movies or TV shows that match this mood.
+    
+    Return ONLY a JSON array with titles. No explanations, no extra text, just the JSON array.
+    
+    Example output format: ["Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Title 6", "Title 7", "Title 8", "Title 9", "Title 10", "Title 11", "Title 12", "Title 13", "Title 14", "Title 15", "Title 16", "Title 17", "Title 18", "Title 19", "Title 20"]`;
+    
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+    const cleanedJson = text.replace(/```json|```/g, "").trim();
+    const titles = JSON.parse(cleanedJson);
+    
+    if (!Array.isArray(titles) || titles.length === 0) {
+      throw new Error('AI returned an empty list');
+    }
+    
+    return { 
+      success: true, 
+      titles: titles.filter(Boolean).slice(0, 20), 
+      source: 'gemini',
+      originalQuery: mood, // Store original query for Load More
+      isGeminiSearch: true // Flag for Load More handling
+    };
     
   } catch (error) {
-    console.error("Gemini SDK Error:", error);
-    const msg = error?.message || 'AI request failed';
-    
-    // Enhanced error handling for 503 and 429 errors
-    if (error?.status === 503 || /high demand|service unavailable/i.test(msg)) {
-      return { 
-        success: false, 
-        error: 'Gemini API is currently experiencing high demand. Please try again in a few moments.' 
-      };
-    }
-    
-    if (error?.status === 429 || /quota|too many requests/i.test(msg)) {
-      return { 
-        success: false, 
-        error: 'API quota exceeded. The free tier has limited requests per day. Please try again tomorrow or upgrade your plan.' 
-      };
-    }
-    
-    if (error?.status === 403 || /permission/i.test(msg)) {
-      return { success: false, error: 'Gemini API permission denied. Check your API key and model access in Google AI Studio.' };
-    }
-    if (error?.status === 404 || /not found/i.test(msg)) {
-      return { success: false, error: 'Model not found. Available models: gemini-2.5-flash, gemini-2.0-flash, gemini-2.0-flash-lite' };
-    }
-    
-    return { success: false, error: msg };
+    console.error("❌ Gemini Error:", error);
+    return { success: false, error: error.message };
   }
 }
 
 export async function fetchMoviesByTitles(titles) {
-  const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-  const BASE_URL = 'https://api.themoviedb.org/3';
-  
   const movies = [];
+  const seenIds = new Set(); // Track seen movie IDs to prevent duplicates
   
   for (const title of titles) {
     try {
-      // Use multi-search so we can return TV series too
-      const response = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(title)}&page=1`);
+      const response = await fetch(`${BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(title)}&page=1`);
+      
+      if (!response.ok) continue;
+      
       const data = await response.json();
-
-      const hit = (data.results || []).find(r => r.media_type === 'movie' || r.media_type === 'tv');
-      if (hit) movies.push(hit);
+      const result = data.results?.find(r => r.media_type === 'movie' || r.media_type === 'tv');
+      
+      if (result && !seenIds.has(result.id)) {
+        movies.push({
+          id: result.id,
+          title: result.title || result.name,
+          poster_path: result.poster_path,
+          vote_average: result.vote_average,
+          release_date: result.release_date || result.first_air_date,
+          media_type: result.media_type,
+          is_tv: result.media_type === 'tv',
+          overview: result.overview
+        });
+        seenIds.add(result.id); // Mark this ID as seen
+      }
     } catch (error) {
-      console.error(`Error fetching movie "${title}":`, error);
+      console.error("Error fetching", title, ":", error);
     }
   }
   

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Play, Calendar, Star, Users, Film, ChevronDown, Eye, ThumbsUp, Clock } from 'lucide-react';
 import ReviewSection from './ReviewSection';
+import WatchParty from './WatchParty';
 import { getYouTubeVideoDetails, searchYouTubeTrailer } from '../actions/youtube';
 import { formatYouTubeDuration } from '../utils/youtube';
 
@@ -10,7 +11,7 @@ const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
 
-export default function MovieDetailModal({ movie, isOpen, onClose }) {
+export default function MovieDetailModal({ movie, isOpen, onClose, currentUser }) {
   const [details, setDetails] = useState(null);
   const [cast, setCast] = useState([]);
   const [videos, setVideos] = useState([]);
@@ -451,6 +452,15 @@ export default function MovieDetailModal({ movie, isOpen, onClose }) {
                         </div>
                       )}
                     </div>
+                  )}
+
+                  {/* Watch Party */}
+                  {(videos.length > 0 || alternativeTrailers.length > 0) && (
+                    <WatchParty 
+                      currentUser={currentUser} 
+                      movieId={videos.length > 0 ? videos[0].key : alternativeTrailers[0]?.videoId}
+                      movieTitle={details?.title || movie?.title}
+                    />
                   )}
 
                   {/* Cast */}
