@@ -122,10 +122,10 @@ export default function GenrePopup({ onApplyFilters, activeGenre, contentType })
         <>
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={() => setIsOpen(false)} />
           
-          <div className="fixed top-20 right-4 w-80 max-h-[70vh] bg-[#1f2937] rounded-xl shadow-2xl border border-purple-500/20 z-50 overflow-hidden">
+          <div className="fixed top-20 right-4 w-80 max-w-[calc(100vw-2rem)] max-h-[70vh] bg-[#1f2937] rounded-xl shadow-2xl border border-purple-500/20 z-50 flex flex-col sm:w-80">
             
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#ec4899] to-purple-600 p-4">
+            <div className="bg-gradient-to-r from-[#ec4899] to-purple-600 p-4 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-white">Browse Content</h3>
                 <button
@@ -140,79 +140,38 @@ export default function GenrePopup({ onApplyFilters, activeGenre, contentType })
               </div>
             </div>
 
-            {/* Content Types */}
-            <div className="p-4 border-b border-gray-700">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-medium text-gray-400">Content Types ({selectedContentTypes.length}/5)</h4>
-                {selectedContentTypes.length > 0 && (
-                  <button
-                    onClick={() => setSelectedContentTypes([])}
-                    className="text-xs text-red-400 hover:text-red-300"
-                  >
-                    Clear Types
-                  </button>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {contentTypes.map((type) => {
-                  const Icon = type.icon;
-                  const isSelected = selectedContentTypes.includes(type.id);
-                  return (
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Content Types */}
+              <div className="p-4 border-b border-gray-700">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-medium text-gray-400">Content Types ({selectedContentTypes.length}/5)</h4>
+                  {selectedContentTypes.length > 0 && (
                     <button
-                      key={type.id}
-                      onClick={() => handleContentTypeClick(type)}
-                      disabled={!isSelected && selectedContentTypes.length >= 5}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all relative ${
-                        isSelected
-                          ? `bg-gradient-to-r ${type.color} text-white`
-                          : 'bg-[#111827] text-gray-300 hover:bg-[#374151] hover:text-white border border-gray-600'
-                      } ${!isSelected && selectedContentTypes.length >= 5 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      onClick={() => setSelectedContentTypes([])}
+                      className="text-xs text-red-400 hover:text-red-300"
                     >
-                      <Icon className="w-4 h-4" />
-                      <span className="truncate">{type.name}</span>
-                      {isSelected && (
-                        <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full"></div>
-                      )}
+                      Clear Types
                     </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Genres */}
-            <div className="p-4 overflow-y-auto max-h-64">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-medium text-gray-400">Genres ({selectedGenres.length}/5)</h4>
-                {selectedGenres.length > 0 && (
-                  <button
-                    onClick={() => setSelectedGenres([])}
-                    className="text-xs text-red-400 hover:text-red-300"
-                  >
-                    Clear Genres
-                  </button>
-                )}
-              </div>
-              
-              {loading ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                  )}
                 </div>
-              ) : (
                 <div className="grid grid-cols-2 gap-2">
-                  {genres.map((genre) => {
-                    const isSelected = selectedGenres.some(g => g.id === genre.id);
+                  {contentTypes.map((type) => {
+                    const Icon = type.icon;
+                    const isSelected = selectedContentTypes.includes(type.id);
                     return (
                       <button
-                        key={genre.id}
-                        onClick={() => handleGenreClick(genre)}
-                        disabled={!isSelected && selectedGenres.length >= 5}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all text-left relative ${
+                        key={type.id}
+                        onClick={() => handleContentTypeClick(type)}
+                        disabled={!isSelected && selectedContentTypes.length >= 5}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all relative ${
                           isSelected
-                            ? 'bg-gradient-to-r from-[#ec4899] to-purple-600 text-white'
+                            ? `bg-gradient-to-r ${type.color} text-white`
                             : 'bg-[#111827] text-gray-300 hover:bg-[#374151] hover:text-white border border-gray-600'
-                        } ${!isSelected && selectedGenres.length >= 5 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        } ${!isSelected && selectedContentTypes.length >= 5 ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
-                        <span className="truncate">{genre.name}</span>
+                        <Icon className="w-4 h-4" />
+                        <span className="truncate">{type.name}</span>
                         {isSelected && (
                           <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full"></div>
                         )}
@@ -220,11 +179,55 @@ export default function GenrePopup({ onApplyFilters, activeGenre, contentType })
                     );
                   })}
                 </div>
-              )}
+              </div>
+
+              {/* Genres */}
+              <div className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-medium text-gray-400">Genres ({selectedGenres.length}/5)</h4>
+                  {selectedGenres.length > 0 && (
+                    <button
+                      onClick={() => setSelectedGenres([])}
+                      className="text-xs text-red-400 hover:text-red-300"
+                    >
+                      Clear Genres
+                    </button>
+                  )}
+                </div>
+                
+                {loading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    {genres.map((genre) => {
+                      const isSelected = selectedGenres.some(g => g.id === genre.id);
+                      return (
+                        <button
+                          key={genre.id}
+                          onClick={() => handleGenreClick(genre)}
+                          disabled={!isSelected && selectedGenres.length >= 5}
+                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all text-left relative ${
+                            isSelected
+                              ? 'bg-gradient-to-r from-[#ec4899] to-purple-600 text-white'
+                              : 'bg-[#111827] text-gray-300 hover:bg-[#374151] hover:text-white border border-gray-600'
+                          } ${!isSelected && selectedGenres.length >= 5 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <span className="truncate">{genre.name}</span>
+                          {isSelected && (
+                            <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full"></div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="p-4 border-t border-gray-700 flex gap-2">
+            {/* Action Buttons - Always Visible */}
+            <div className="p-4 border-t border-gray-700 flex gap-2 flex-shrink-0 bg-[#1f2937]">
               <button
                 onClick={clearAllFilters}
                 className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors text-sm"

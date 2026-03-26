@@ -43,6 +43,9 @@ export default function Home() {
   const [isMoodSearching, setIsMoodSearching] = useState(false);
   const [showMoodResults, setShowMoodResults] = useState(false);
   const [moodError, setMoodError] = useState('');
+  const [currentMoodQuery, setCurrentMoodQuery] = useState(''); // Store for Load More
+  const [isGeminiSearch, setIsGeminiSearch] = useState(false); // Track search type
+  const [currentMoodData, setCurrentMoodData] = useState(null); // Store current mood preset data for load more
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeGenre, setActiveGenre] = useState([]);
@@ -215,14 +218,38 @@ export default function Home() {
         setFeedPage(nextPage);
         setFeedHasMore(nextPage < Math.min(movieData.total_pages || 1, tvData.total_pages || 1));
       } else if (feedMode === 'search') {
-        const res = await fetch(`${API_URLS.searchMulti + encodeURIComponent(searchTerm)}&page=${nextPage}`);
-        const data = await res.json();
-        const filtered = (data.results || [])
-          .filter((r) => r.media_type === 'movie' || r.media_type === 'tv')
-          .map(normalizeTmdbItem);
-        setMovies(prev => [...prev, ...filtered]);
-        setFeedPage(nextPage);
-        setFeedHasMore(nextPage < (data.total_pages || 1));
+        if (isGeminiSearch && currentMoodQuery) {
+          // Special Load More for Gemini searches - get more recommendations
+          const moreRecommendations = await getMoodMovieRecommendations(currentMoodQuery);
+          if (moreRecommendations.success && moreRecommendations.titles) {
+            const moreMovies = await fetchMoviesByTitles(moreRecommendations.titles);
+            setMovies(prev => [...prev, ...moreMovies]);
+            setFeedPage(nextPage);
+            setFeedHasMore(moreMovies.length >= 20);
+          } else {
+            setFeedHasMore(false);
+          }
+        } else if (currentMoodData && currentMoodData.mood) {
+          // Special Load More for preset-based searches - get more from the same preset
+          const moreRecommendations = await getMoodMovieRecommendations(currentMoodQuery);
+          if (moreRecommendations.success && moreRecommendations.media) {
+            setMovies(prev => [...prev, ...moreRecommendations.media]);
+            setFeedPage(nextPage);
+            setFeedHasMore(moreRecommendations.media.length >= 20);
+          } else {
+            setFeedHasMore(false);
+          }
+        } else {
+          // Regular TMDB search
+          const res = await fetch(`${API_URLS.searchMulti + encodeURIComponent(searchTerm)}&page=${nextPage}`);
+          const data = await res.json();
+          const filtered = (data.results || [])
+            .filter((r) => r.media_type === 'movie' || r.media_type === 'tv')
+            .map(normalizeTmdbItem);
+          setMovies(prev => [...prev, ...filtered]);
+          setFeedPage(nextPage);
+          setFeedHasMore(nextPage < (data.total_pages || 1));
+        }
       } else if (feedMode === 'filters') {
         const primaryContentType = contentType.length > 0 ? contentType[0] : 'movie';
         const primaryGenre = activeGenre.length > 0 ? activeGenre[0] : null;
@@ -365,27 +392,40 @@ export default function Home() {
     if (!moodSearchTerm.trim()) return;
     
     setIsMoodSearching(true);
-    setShowMoodResults(true);
     setMoodError('');
     
     try {
       const recommendations = await getMoodMovieRecommendations(moodSearchTerm);
       
       if (recommendations.success) {
-        const movies = await fetchMoviesByTitles(recommendations.titles);
-        setMoodMovies(movies);
+        // Use the media array if available (from presets), otherwise fall back to title-based fetch
+        let movies;
+        if (recommendations.media) {
+          movies = recommendations.media; // Direct use of preset media with full details
+          setIsGeminiSearch(false); // Not a Gemini search
+          setCurrentMoodData(recommendations); // Store preset data for load more
+          setCurrentMoodQuery(moodSearchTerm); // Store query for reference
+        } else {
+          movies = await fetchMoviesByTitles(recommendations.titles); // Gemini fallback
+          setIsGeminiSearch(true); // Mark as Gemini search
+          setCurrentMoodQuery(moodSearchTerm); // Store query for Load More
+          setCurrentMoodData(null); // Clear preset data
+        }
+        
+        setMovies(movies); // Set main movies state to show in UI
+        setActiveTab('Mood Results'); // Set active tab to show mood results
+        setFeedMode('search'); // Use search mode
+        setFeedPage(1); // Reset page for Load More
+        setFeedHasMore(true); // Enable Load More
         if (!movies || movies.length === 0) {
-          setMoodError('AI returned titles, but none matched on TMDB. Try a simpler mood or a different phrasing.');
+          setMoodError('No movies found. Try a different mood description.');
         }
       } else {
-        // Avoid Next devtools "intercept-console-error" noise during hydration/overlay
-        console.log('Mood search failed:', recommendations.error);
-        setMoodMovies([]);
+        setMovies([]);
         setMoodError(recommendations.error || 'Mood search failed');
       }
     } catch (error) {
-      console.log('Error in mood search:', error);
-      setMoodMovies([]);
+      setMovies([]);
       setMoodError(error?.message || 'Mood search failed');
     } finally {
       setIsMoodSearching(false);

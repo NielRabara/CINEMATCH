@@ -1,6 +1,6 @@
 'use server';
 
-const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+const API_KEY = '61e7c417108a4dccaebf5e5b6a0d23ef';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2MWU3YzQxNzEwOGE0ZGNjYWViZjVlNWI2YTBkMjNlZiIsIm5iZiI6MTc2OTE3ODI0NS4yOTc5OTk5LCJzdWIiOiI2OTczODQ4NTg2N2ZlMzE5ZmZkY2E2ZmYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.9abeI32DC6v-bMedSf3qNMj6fp4bc0sld9BLM_qXuFc';
 
