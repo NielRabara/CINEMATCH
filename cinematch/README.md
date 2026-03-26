@@ -333,9 +333,8 @@ OMDB_API_KEY=a39def2e
 ### 4. Database Setup
 1. Go to your [Supabase Dashboard](https://supabase.com/dashboard)
 2. Open the SQL Editor
-3. Run the SQL commands from `supabase-setup.sql`
-4. Run the migration from `add-password-column.sql` if needed
-5. Run the RLS policies from `fix-rls-policies.sql`
+3. Run the complete setup from `database-setup.sql`
+4. This single script creates all tables, indexes, policies, and permissions needed
 
 ### 5. Run Development Server
 ```bash
